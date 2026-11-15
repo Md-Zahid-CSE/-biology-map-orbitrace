@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OrbiTrace | Biology Map</title>
+{% load static %}
+<link rel="stylesheet" href="{% static 'pathfinder/style.css' %}">
+{% if not google_maps_key %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+{% endif %}
+</head>
+<body>
+<header class="topbar">
+ <div class="brand"><div class="brandmark">O<span>•</span></div><div><b>OrbiTrace</b><small>BIOLOGY MAP · PATHFINDING LAB</small></div></div>
+ <div class="topmeta"><span class="live-dot"></span> ALGORITHM COMPARISON <span class="pill">ACADEMIC DEMO</span></div>
+</header>
+<main class="workspace">
+ <aside class="sidebar">
+  <div class="eyebrow">ROUTE CONFIGURATION</div><h1>Find your<br><em>best path.</em></h1>
+  <p class="intro">Compare four graph-search algorithms between two map nodes.</p>
+  <label for="start">SOURCE NODE</label><select id="start"></select>
+  <label for="goal">DESTINATION NODE</label><select id="goal"></select>
+  <label for="algorithm">ALGORITHM</label><select id="algorithm">
+   <option value="BFS">BFS · Breadth First Search</option>
+   <option value="DFS">DFS · Depth First Search</option>
+   <option value="Dijkstra">Dijkstra · Lowest Cost</option>
+   <option value="A*">A* · Heuristic Search</option>
+  </select>
+  <button id="runBtn" class="run-btn"><span>Run selected algorithm</span><span>↗</span></button>
+  <div class="hint"><span class="hinticon">⌖</span> Tip: click any node marker on the map or use the dropdowns to set source and destination.</div>
+  <div class="legend-title">ACTIVE ROUTE</div>
+  <div class="legend"><span class="line blue" id="activeLegend"></span><span id="activeAlgorithmLabel">BFS</span></div>
+  <div class="mapnote"><b>Map layer</b><span>{% if google_maps_key %}Google Maps · Road geometry{% else %}OpenStreetMap · Interactive Graph{% endif %}</span></div>
+  <div id="status" class="status">Choose nodes, then run the comparison.</div>
+ </aside>
+ <section class="map-area"><div id="map"></div><div class="mapbadge"><span class="live-dot"></span> DHAKA NETWORK <small>15 NODES</small></div><div class="map-attribution">Illustrative academic graph · Not live traffic</div></section>
+</main>
+<section class="results-section">
+ <div class="results-head"><div><div class="eyebrow">ALGORITHM COMPARISON</div><h2>Selected result</h2></div><div id="summary" class="summary">Only the algorithm you selected will appear here</div></div>
+ <div id="mainResult" class="main-result">
+  <article class="result-card waiting"><div class="card-top"><span class="algo-dot bluebg"></span><b>Selected algorithm result</b><span class="tag">READY</span></div><div class="waitingtext">Choose an algorithm and click Run.</div></article>
+ </div>
+ <div class="all-results-head"><b>All algorithms · Quick comparison</b><span>Compact overview</span></div>
+ <div id="cards" class="cards">
+  <article class="mini-card waiting">BFS <span>Waiting</span></article>
+  <article class="mini-card waiting">DFS <span>Waiting</span></article>
+  <article class="mini-card waiting">Dijkstra <span>Waiting</span></article>
+  <article class="mini-card waiting">A* <span>Waiting</span></article>
+ </div>
+ <footer>Biology Map · Academic Project <span>Pathfinding with Django & Map Visualization</span></footer>
+</section>
+<script>window.GRAPH_NODES={{ nodes_json|safe }};window.MAPS_KEY="{{ google_maps_key|escapejs }}";</script>
+<script src="{% static 'pathfinder/app.js' %}"></script>
+{% if google_maps_key %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key|urlencode }}&callback=initMap"></script>
+{% else %}
+<script>window.addEventListener('DOMContentLoaded', initLeafletMap);</script>
+{% endif %}
+</body></html>
