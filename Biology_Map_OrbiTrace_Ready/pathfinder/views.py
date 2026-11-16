@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 import json
 from django.conf import settings
 from django.http import JsonResponse
@@ -13,6 +14,7 @@ def home(request):
     })
 
 @require_POST
+@csrf_exempt
 def compare_paths(request):
     try:
         body=json.loads(request.body or "{}")
@@ -27,3 +29,4 @@ def compare_paths(request):
         return JsonResponse({"start":start,"goal":goal,"nodes":NODES,"selected":selected,"results":results})
     except (json.JSONDecodeError,TypeError):
         return JsonResponse({"error":"Invalid request."},status=400)
+
