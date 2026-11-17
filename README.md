@@ -11,20 +11,7 @@
 
 ---
 
-## Table of Contents
-1. [System Architecture & Workflow Flowchart](#system-architecture--workflow-flowchart)
-2. [Core Features](#core-features)
-3. [Implemented Algorithms & Complexity Analysis](#implemented-algorithms--complexity-analysis)
-4. [Project Directory Structure](#project-directory-structure)
-5. [API Endpoint Specification](#api-endpoint-specification)
-6. [Local Development & Installation](#local-development--installation)
-7. [Project Plan & Future Roadmap](#project-plan--future-roadmap)
-
----
-
 ## System Architecture & Workflow Flowchart
-
-The following diagram illustrates the end-to-end request lifecycle, algorithm execution pipeline, and map rendering workflow inside OrbiTrace:
 
 ```mermaid
 flowchart TD
