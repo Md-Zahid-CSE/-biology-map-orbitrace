@@ -1,36 +1,45 @@
-# OrbiTrace — Dhaka Network Pathfinding Visualizer
+# OrbiTrace — Dhaka Network Pathfinding & Route Visualization Engine
 
-**Live Demo:** [https://biomap-wub.onrender.com](https://biomap-wub.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://biomap-wub.onrender.com)
+[![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-Backend-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Google Maps API](https://img.shields.io/badge/Google_Maps-JS_API-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white)](https://developers.google.com/maps)
 
-OrbiTrace is an interactive web-based pathfinding and route visualization application built with **Django** and **Google Maps JavaScript API**. It allows users to compare classic graph-search algorithms across a 15-node network in Dhaka, Bangladesh.
+**Live Application:** [https://biomap-wub.onrender.com](https://biomap-wub.onrender.com)
 
----
-
-## Features
-
-* **Interactive Map Visualization:** Built on Google Maps JavaScript API with custom node markers across 15 key locations in Dhaka (e.g., Uttara, Mirpur, Mohakhali, Tejgaon, Dhanmondi, Jatrabari).
-* **Four Graph-Search Algorithms:**
-  * **BFS (Breadth-First Search):** Explores equally in all directions to find the path with the fewest edges.
-  * **DFS (Depth-First Search):** Explores as far as possible along each branch before backtracking.
-  * **Dijkstra's Algorithm:** Calculates the shortest weighted path between the source and destination nodes.
-  * **A\* (A-Star) Search:** Uses heuristic distance estimation for optimal and fast pathfinding.
-* **Algorithm Comparison:** Displays execution results, path geometry, and performance metrics for the selected route.
-* **Dual Node Selection:** Select source and destination points either by clicking directly on map markers or using the dropdown menus.
+**OrbiTrace** is an interactive web-based graph-search and route visualization platform engineered with **Django** and **Google Maps JavaScript API**. It models a 15-node urban transportation network across Dhaka, Bangladesh, enabling real-time execution, path rendering, and algorithmic efficiency comparisons across four foundational pathfinding algorithms.
 
 ---
 
-## Tech Stack
-
-* **Backend:** Python 3.13, Django
-* **Frontend:** HTML5, CSS3, Vanilla JavaScript
-* **Mapping & API:** Google Maps JavaScript API
-* **Deployment & Static Files:** Render, Gunicorn, WhiteNoise
+## Table of Contents
+1. [System Architecture & Workflow Flowchart](#system-architecture--workflow-flowchart)
+2. [Core Features](#core-features)
+3. [Implemented Algorithms & Complexity Analysis](#implemented-algorithms--complexity-analysis)
+4. [Project Directory Structure](#project-directory-structure)
+5. [API Endpoint Specification](#api-endpoint-specification)
+6. [Local Development & Installation](#local-development--installation)
+7. [Project Plan & Future Roadmap](#project-plan--future-roadmap)
 
 ---
 
-## Local Setup & Installation
+## System Architecture & Workflow Flowchart
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/Md-Zahid-CSE/-biology-map-orbitrace.git](https://github.com/Md-Zahid-CSE/-biology-map-orbitrace.git)
-   cd -biology-map-orbitrace/Biology_Map_OrbiTrace_Ready
+The following diagram illustrates the end-to-end request lifecycle, algorithm execution pipeline, and map rendering workflow inside OrbiTrace:
+
+```mermaid
+flowchart TD
+    A[User Opens Web Interface] --> B[Load Dhaka 15-Node Graph & Google Maps JS API]
+    B --> C{Node Selection Method}
+    C -->|Click Map Marker| D[Set Source & Destination Nodes]
+    C -->|Dropdown Menu| D
+    D --> E[Select Algorithm: BFS / DFS / Dijkstra / A*]
+    E --> F[Click 'Run Selected Algorithm']
+    F --> G[Send Async POST Request to /api/compare/]
+    G --> H[Django Backend Graph Engine]
+    H --> I{Algorithm Router}
+    I -->|Unweighted| J1[BFS / DFS Traversal]
+    I -->|Weighted| J2[Dijkstra / A* Heuristic Search]
+    J1 --> K[Compute Optimal Path, Distance & Visited Nodes]
+    J2 --> K
+    K --> L[Return JSON Payload to Frontend]
+    L --> M[Render Polyline Route & Performance Metrics on Map]
