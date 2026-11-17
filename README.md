@@ -49,3 +49,69 @@ flowchart TD
     K2 --> L
     L --> M[Serialize Result as JSON Response]
     M --> N[Frontend Renders Polyline & Displays Analytics Card]
+```
+
+### Client-Server Interaction Sequence
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Frontend (Google Maps JS)
+    participant Server as Django Backend (/api/compare/)
+    participant Engine as Graph Search Engine
+
+    User->>Browser: Selects Source (n1), Destination (n15), Algorithm (A*)
+    User->>Browser: Clicks "Run selected algorithm"
+    Browser->>Server: POST /api/compare/ {source, destination, algorithm}
+    Server->>Engine: Load Adjacency Graph & Coordinates
+    Engine->>Engine: Execute A* Search with Haversine Heuristic
+    Engine-->>Server: Return Optimal Path, Distance & Visited Nodes
+    Server-->>Browser: HTTP 200 OK (JSON Payload)
+    Browser->>Browser: Clear Previous Polylines & Draw New Route
+    Browser-->>User: Display Route Line & Performance Summary
+```
+
+---
+
+## 3. Graph Model & Mathematical Formulation
+
+The Dhaka road network is represented as a weighted, undirected graph $G = (V, E)$, where:
+* $V = \{n_1, n_2, \dots, n_{15}\}$ represents 15 major geographic intersections/hubs in Dhaka, each defined by a coordinate pair $(\phi, \lambda)$ representing latitude and longitude.
+* $E \subseteq V \times V$ represents direct road connections between hubs.
+
+### Edge Weight & Heuristic Calculation (Haversine Formula)
+For weighted algorithms (**Dijkstra** and **A\***), the physical distance $d$ between two geographic coordinates $(\phi_1, \lambda_1)$ and $(\phi_2, \lambda_2)$ is computed using the **Haversine Formula** to account for Earth's curvature:
+
+$$d = 2r \arcsin\left(\sqrt{\sin^2\left(\frac{\Delta\phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta\lambda}{2}\right)}\right)$$
+
+Where:
+* $r \approx 6371\text{ km}$ (Earth's mean radius)
+* $\Delta\phi = \phi_2 - \phi_1$
+* $\Delta\lambda = \lambda_2 - \lambda_1$
+
+For **A\* Search**, each node $n$ is evaluated using the cost function:
+
+$$f(n) = g(n) + h(n)$$
+
+* $g(n)$: Exact accumulated road distance from the start node to node $n$.
+* $h(n)$: Admissible straight-line Haversine distance from node $n$ to the destination node.
+
+---
+
+## 4. Implemented Algorithms & Technical Comparison
+
+### 1. Breadth-First Search (BFS)
+* **Mechanism:** Explores the graph layer-by-layer using a First-In-First-Out (FIFO) queue.
+* **Behavior on Map:** Guarantees the path with the **minimum number of intermediate stops (hops)**, regardless of actual road distance in kilometers.
+
+### 2. Depth-First Search (DFS)
+* **Mechanism:** Explores as deep as possible along a single branch using a Last-In-First-Out (LIFO) stack before backtracking.
+* **Behavior on Map:** Does **not** guarantee the shortest path or minimum hops; useful for demonstrating non-optimal traversal paths in cyclic road networks.
+
+### 3. Dijkstra's Algorithm
+* **Mechanism:** Uses a Min-Heap Priority Queue to always expand the unvisited node with the lowest cumulative distance $g(n)$ from the source.
+* **Behavior on Map:** Guarantees the **mathematically shortest physical distance**, exploring outward in all directions until the target is reached.
+
+### 4. A* (A-Star) Search
+* **Mechanism:** Combines Dijkstra's actual cost $g(n)$ with a directional heuristic $h(n)$ toward the destination.
+* **Behavior on Map:**
